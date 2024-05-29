@@ -34,3 +34,11 @@ class MiniRedis:
                     del self.expiration[key]
                 return 1
             return 0
+
+    def expiration(self, key, seconds):
+        """ Sets a timeout on the specified key. After the timeout has expired, the key should be deleted. """
+        with self.lock:
+            if key in self.store:
+                self.expiration[key] = time.time() + seconds
+                return "OK"
+            return -1
