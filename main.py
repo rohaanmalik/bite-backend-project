@@ -30,18 +30,21 @@ def handle_client(clientSocket, redis_instance):
 
 def process_command(command, data, redis_instance) -> str:
     """ Processes the command and returns a response for the client"""
-    if command == "SET":
+    if command == "SET" and len(data) == 3:
         key, value = data[1], data[2]
         return redis_instance.set(key, value)
-    elif command == "GET":
+    elif command == "GET" and len(data) == 2:
         key = data[1]
         return redis_instance.get(key) 
-    elif command == "DEL":
+    elif command == "DEL" and len(data) == 2:
         key = data[1]
         return str(redis_instance.delete(key))
-    elif command == "EXPIRE":
+    elif command == "EXPIRE" and len(data) == 3:
         key, time = data[1], data[2]
-        return redis_instance.expiration(key, time)
+        return redis_instance.expiration(key, int(time))
+    elif command == "TTL" and len(data) == 2:
+        key = data[1]
+        return str(redis_instance.ttl(key))
     else:
         return "Invalid command"
             
