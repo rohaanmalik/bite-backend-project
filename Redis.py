@@ -1,8 +1,10 @@
 import time
+import threading
 class MiniRedis:
     def __init__(self):
         self.store = {}
         self.expiration = {}
+        self.lock = threading.Lock()
     
     def set(self, key, value):
         """ Stores the key-value pair in the database"""
@@ -18,10 +20,10 @@ class MiniRedis:
             if key in self.expiration and time.time() > self.expiration[key]:
                 del self.store[key]
                 del self.expiration[key]
-                return None
+                return "nil"
             if key in self.store:
                 return self.store[key]
-            return None
+            return "nil"
     
     def delete(self, key):
         """ Deletes the key-value pair from the database."""
