@@ -46,7 +46,7 @@ def process_command(command, data, redis_instance) -> str:
         key = data[1]
         return str(redis_instance.ttl(key))
     else:
-        return "Invalid command"
+        return "ERROR: Unkown command or wrong arguements"
             
 if __name__ == "__main__":
     try:
