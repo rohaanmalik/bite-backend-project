@@ -37,7 +37,7 @@ def handle_client(clientSocket, redis_instance):
             data = data.split()
             command = data[0].upper() # first word is always the command
             response = process_command(command, data, redis_instance)
-            clientSocket.send(response.encode())
+            clientSocket.send((response + "\n").encode())
 
 def process_command(command, data, redis_instance) -> str:
     """ Processes the command and returns a response for the client"""
