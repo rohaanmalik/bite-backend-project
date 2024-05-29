@@ -39,6 +39,9 @@ def process_command(command, data, redis_instance) -> str:
     elif command == "DEL":
         key = data[1]
         return str(redis_instance.delete(key))
+    elif command == "EXPIRE":
+        key, time = data[1], data[2]
+        return redis_instance.expiration(key, time)
     else:
         return "Invalid command"
             
