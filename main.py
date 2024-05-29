@@ -1,6 +1,7 @@
 import socket
 import threading
 from Redis import MiniRedis
+import time
 
 #  first create a tcp server and listen for incoming connections
 def start_server(host="127.0.0.1", port=6379):
@@ -10,11 +11,21 @@ def start_server(host="127.0.0.1", port=6379):
     server.listen(5) 
     print(f"Server started listening on {host}:{port}")
     
+
+    def persist_data():
+        while True:
+            time.sleep(10)
+            redis_instance.save_data()
+    
+    backgroundThread = threading.Thread(target=persist_data, daemon=True) # background thread that persists data every 10 sec
+    backgroundThread.start()
+
     while True:
         client, addr = server.accept()
         print(f"Connection from {addr}")
         clientHandler = threading.Thread(target=handle_client, args=(client, redis_instance))
         clientHandler.start()
+
 
 def handle_client(clientSocket, redis_instance):
     with clientSocket:

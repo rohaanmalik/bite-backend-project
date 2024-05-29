@@ -1,10 +1,14 @@
 import time
 import threading
+import json 
+import os
 class MiniRedis:
-    def __init__(self):
+    def __init__(self, data_file="data.json"):
         self.store = {}
         self.expirations = {}
         self.lock = threading.Lock()
+        self.data_file = data_file
+        self.load_data() 
     
     def set(self, key, value):
         """ Stores the key-value pair in the database"""
@@ -55,3 +59,22 @@ class MiniRedis:
                 else:
                     return -1 # exists but no expiration 
             return -2
+    
+    def save_data(self):
+        """ Save data to a file """
+        with self.lock:
+            data = {
+                "store": self.store,
+                "expirations": {key: exp - time.time() for key, exp in self.expirations.items()}
+            }
+            # overwrite the file completely with new info
+            with open(self.data_file, "w") as f:
+                json.dump(data, f)
+            
+    def load_data(self):
+        """ Load data from the file"""
+        if os.path.exists(self.data_file):
+            with open(self.data_file, "r") as f:
+                data = json.load(f)
+                self.store = data["store"]
+                self.expirations = {key: exp + time.time() for key, exp in data["expirations"].items()}
